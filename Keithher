@@ -1,1 +1,1277 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("KJ CHARACTER MOVESET PLACE", "GrapeTheme")
+local Tab = Window:NewTab("Ultimate")
+local Section = Tab:NewSection("KJ")
+Section:NewButton("KJ Moves (no real anims)", "kjkjkj", function()
+local tool = Instance.new("Tool")
+tool.Name = "Ravage"
 
+-- Create the handle (invisible part)
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1  -- Make it invisible
+handle.CanCollide = false  -- Ensure it doesn't collide with other parts
+handle.Parent = tool
+
+-- Create a Sound instance
+local soundId = "rbxassetid://17710707093"  -- Replace with your sound ID
+local ravage = Instance.new("Sound")
+ravage.SoundId = soundId
+ravage.Parent = tool
+
+-- Create the animations
+local primaryAnimationId = "rbxassetid://12510170988"
+local primaryAnimationId2 = "rbxassetid://12296882427"  -- Replace with your animation ID
+local secondaryAnimationId = "rbxassetid://13560306510"  -- Replace with your new animation ID
+
+-- Function to equip the tool and trigger animation and sound
+local function onEquipped()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        -- Load and play the primary animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = primaryAnimationId
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack.Looped = false
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1.55)
+        -- Load and play the primary animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = primaryAnimationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack.Looped = false
+        animationTrack:Play()
+
+        -- Function to handle teleportation to the nearest humanoid
+        local function teleportToNearestHumanoid()
+            local originalPosition = rootPart.Position
+            local teleporting = true
+            local targetHumanoid = nil
+            local teleportEndTime = tick() + 2.6  -- 6 seconds duration
+
+            -- Loop until 6 seconds have passed or the target humanoid dies
+            while teleporting and tick() < teleportEndTime do
+                local closestDistance = 8  -- 8 studs
+                targetHumanoid = nil
+
+                -- Find the nearest humanoid within range
+                for _, instance in ipairs(workspace:GetDescendants()) do
+                    if instance:IsA("Model") and instance:FindFirstChild("Humanoid") and instance:FindFirstChild("HumanoidRootPart") and instance ~= character then
+                        local otherRootPart = instance.HumanoidRootPart
+                        local distance = (rootPart.Position - otherRootPart.Position).Magnitude
+                        if distance <= closestDistance then
+                            closestDistance = distance
+                            targetHumanoid = instance
+                        end
+                    end
+                end
+
+                if targetHumanoid and targetHumanoid:FindFirstChild("HumanoidRootPart") then
+                    local targetRootPart = targetHumanoid.HumanoidRootPart
+                    local direction = (targetRootPart.Position - rootPart.Position).unit
+                    local offsetPosition = targetRootPart.Position - (direction * 2)  -- Stay 2 studs in front
+                    rootPart.CFrame = CFrame.lookAt(offsetPosition, targetRootPart.Position)
+                end
+
+                wait(0.1)  -- Wait a short duration before checking again
+            end
+
+            -- Return to the original position if teleportation ends
+            rootPart.CFrame = CFrame.new(originalPosition)
+        end
+
+        -- Function to check for humanoids in range and switch animations
+        local function checkForHumanoidsInRange()
+            while animationTrack.IsPlaying do
+                local humanoidsInRange = false
+
+                -- Find the nearest humanoid within range
+                for _, instance in ipairs(workspace:GetDescendants()) do
+                    if instance:IsA("Model") and instance:FindFirstChild("Humanoid") and instance:FindFirstChild("HumanoidRootPart") and instance ~= character then
+                        local otherRootPart = instance.HumanoidRootPart
+                        local distance = (rootPart.Position - otherRootPart.Position).Magnitude
+                        if distance <= 8 then
+                            humanoidsInRange = true
+                            break
+                        end
+                    end
+                end
+
+                if humanoidsInRange then
+                    -- Stop the current animation and play the new animation
+                    animationTrack:Stop()
+
+                    local newAnimation = Instance.new("Animation")
+                    newAnimation.AnimationId = secondaryAnimationId
+                    local newAnimationTrack = humanoid:LoadAnimation(newAnimation)
+                    newAnimationTrack.Looped = true
+                    newAnimationTrack:Play()
+                    newAnimationTrack:AdjustSpeed(5)
+                    wait(0.2)
+                    newAnimationTrack:AdjustSpeed(0.5)
+                    wait(1.55)
+                    newAnimationTrack:AdjustSpeed(1.55)
+                    wait(1)
+                    newAnimationTrack:AdjustSpeed(15)
+                    wait(0.5)
+                    newAnimationTrack:AdjustSpeed(1)
+
+                    -- Start teleporting to the nearest humanoid
+                    teleportToNearestHumanoid()
+
+                    -- Stop the new animation after teleportation
+                    newAnimationTrack:Stop()
+                    break
+                end
+
+                wait(0.1)  -- Check every 0.1 seconds
+            end
+        end
+
+        -- Start checking for humanoids in range
+        spawn(checkForHumanoidsInRange)
+
+        -- Automatically unequip the tool after 0.25 seconds
+        delay(0.25, function()
+            if tool.Parent == character then
+                tool.Parent = player.Backpack
+            end
+        end)
+
+        -- Stop sound and unanchor humanoid root part when unequipped
+        tool.Unequipped:Connect(function()
+            ravage:Stop()
+            rootPart.Anchored = false
+        end)
+    end
+end
+
+-- Connect the function to the Equipped event of the tool
+tool.Equipped:Connect(onEquipped)
+
+-- Give the tool to the player
+tool.Parent = game.Players.LocalPlayer.Backpack  -- Place in player's backpack
+--kk
+local tool = Instance.new("Tool")
+tool.Name = "Swift Sweep"
+ 
+-- Create the handle (invisible part)
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1  -- Make it invisible
+handle.CanCollide = false  -- Ensure it doesn't collide with other parts
+handle.Parent = tool
+ 
+-- Create the animation
+local animationId = "rbxassetid://13560306510"  -- Replace with your animation ID
+ 
+-- Function to equip the tool and trigger animation
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+ 
+        -- Anchor the humanoid root part
+        rootPart.Anchored = true
+ 
+        -- Load and play animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        --next
+               -- Variables
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+ 
+-- Create the part
+local part = Instance.new("Part")
+part.Size = Vector3.new(1, 1, 1)
+part.Anchored = true
+part.CanCollide = false
+part.Position = humanoidRootPart.Position
+part.Transparency = 1 -- Make the part invisible
+part.Parent = workspace
+ 
+-- Add the special mesh
+local mesh = Instance.new("SpecialMesh")
+mesh.MeshId = "rbxassetid://3188638000"
+mesh.Scale = Vector3.new(10, 1, 10)
+mesh.VertexColor = Vector3.new(1, 1, 1)  -- Set the vertex color to (1, 1, 1)
+mesh.Parent = part
+ 
+-- Create the decal
+local decal = Instance.new("Decal")
+decal.Texture = "rbxassetid://3840203982"
+decal.Face = Enum.NormalId.Front
+decal.Color3 = Color3.fromRGB(100, 999, 9999)
+decal.Transparency = 0 -- Ensure the decal is visible
+decal.Parent = part
+ 
+-- Function to make the mesh spin
+local function spinMesh()
+    while part.Parent do
+        part.CFrame = part.CFrame * CFrame.Angles(0, math.rad(10), 0)
+        task.wait(0.01)
+    end
+end
+
+ 
+-- Start spinning the mesh in a separate thread
+task.spawn(spinMesh)
+ 
+-- Remove the part after 1 second
+task.wait(0.57)
+part:Destroy()
+        animationTrack:Stop()
+        -- unAnchor the humanoid root part
+        rootPart.Anchored = false
+        -- Stop animation and unanchor humanoid root part when unequipped
+        tool.Unequipped:Connect(function()
+        print("you unheld a tool WOW! LOL")
+        wait(0.57)
+        animationTrack:Stop()
+        end)
+    end
+end
+ 
+-- Connect the function to the Equipped event of the tool
+tool.Equipped:Connect(onEquipped)
+ 
+-- Give the tool to the player
+tool.Parent = game.Players.LocalPlayer.Backpack  -- Place in player's backpack
+-- Create the tool
+local tool = Instance.new("Tool")
+tool.Name = "Collateral Ruin"
+ 
+-- Create the handle (invisible part)
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1  -- Make it invisible
+handle.CanCollide = false  -- Ensure it doesn't collide with other parts
+handle.Parent = tool
+ 
+-- Create a Sound instance
+local soundId = "rbxassetid://your_sound_id_here"  -- Replace with your sound ID
+local sound = Instance.new("Sound")
+sound.SoundId = soundId
+sound.Parent = tool
+ 
+-- Create the animation
+local animationId = "rbxassetid://15944317351"  -- Replace with your animation ID
+ 
+-- Function to equip the tool and trigger animation and sound
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+ 
+        -- Anchor the humanoid root part
+        rootPart.Anchored = true
+ 
+        -- Load and play animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(7)
+        wait(0.3)
+        animationTrack:AdjustSpeed(0.8)
+        -- Variables
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+ 
+-- Create the part
+local part = Instance.new("Part")
+part.Size = Vector3.new(1, 1, 1)
+part.Anchored = true
+part.CanCollide = false
+part.Position = humanoidRootPart.Position
+part.Transparency = 1 -- Make the part invisible
+part.Parent = workspace
+--w
+-- Create the part
+local part2 = Instance.new("Part")
+part2.Size = Vector3.new(2, 2, 2)
+part2.Anchored = true
+part2.CanCollide = false
+part2.Position = humanoidRootPart.Position
+part2.Transparency = 1 -- Make the part invisible
+part2.Parent = workspace
+ 
+-- Add the special mesh
+local mesh = Instance.new("SpecialMesh")
+mesh.MeshId = "rbxassetid://3188638000"
+mesh.Scale = Vector3.new(10, 1, 10)
+mesh.VertexColor = Vector3.new(1, 1, 1)  -- Set the vertex color to (1, 1, 1)
+mesh.Parent = part
+ 
+-- Add the special mesh
+local mesh = Instance.new("SpecialMesh")
+mesh.MeshId = "rbxassetid://3188638000"
+mesh.Scale = Vector3.new(10, 1, 10)
+mesh.VertexColor = Vector3.new(1, 1, 1)  -- Set the vertex color to (1, 1, 1)
+mesh.Parent = part2
+ 
+-- Create the decal
+local decal = Instance.new("Decal")
+decal.Texture = "rbxassetid://3840203982"
+decal.Face = Enum.NormalId.Back
+decal.Color3 = Color3.fromRGB(500, 0, 0)
+decal.Transparency = 0 -- Ensure the decal is visible
+decal.Parent = part
+ 
+-- Create the decal
+local decal = Instance.new("Decal")
+decal.Texture = "rbxassetid://3840203982"
+decal.Face = Enum.NormalId.Front
+decal.Color3 = Color3.fromRGB(0, 0, 0)
+decal.Transparency = 0 -- Ensure the decal is visible
+decal.Parent = part2
+ 
+-- Function to make the mesh spin
+local function spinMesh()
+    while part.Parent do
+        part.CFrame = part.CFrame * CFrame.Angles(0, math.rad(10), 0)
+        task.wait(0.01)
+    end
+end
+ 
+-- Function to make the mesh spin
+local function spinMesh2()
+    while part2.Parent do
+        part2.CFrame = part2.CFrame * CFrame.Angles(0, math.rad(20), 0)
+        task.wait(0.01)
+    end
+end
+ 
+-- Start spinning the mesh in a separate thread
+task.spawn(spinMesh)
+task.spawn(spinMesh2)
+ 
+-- Remove the part after 1 second
+task.wait(1.4)
+part:Destroy()
+part2:Destroy()
+--next
+        animationTrack:AdjustSpeed(0)
+        wait(1)
+        animationTrack:AdjustSpeed(1)
+        wait(1.88)
+                rootPart.Anchored = false
+ 
+        -- Stop animation, sound, and unanchor humanoid root part when unequipped
+        tool.Unequipped:Connect(function()
+print("tool unheld LOL")
+        end)
+    end
+end
+ 
+-- Connect the function to the Equipped event of the tool
+tool.Equipped:Connect(onEquipped)
+
+-- Give the tool to the player
+tool.Parent = game.Players.LocalPlayer.Backpack  -- Place in player's b
+--kk
+local tool = Instance.new("Tool")
+tool.Name = "20 Series"
+
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1
+handle.CanCollide = false
+handle.Parent = tool
+
+local soundId = "rbxassetid://17150550559"
+local sound = Instance.new("Sound")
+sound.SoundId = soundId
+sound.Parent = tool
+
+local soundId2 = "rbxassetid://17150550302"
+local sound2 = Instance.new("Sound")
+sound2.SoundId = soundId2
+sound2.Parent = tool
+
+local f1 = "rbxassetid://12342141464"
+local f2 = "rbxassetid://12983333733"
+local f3 = "rbxassetid://13801083337"
+
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        rootPart.Anchored = true
+        sound:Play()
+        sound2:Play()
+
+        local animation = Instance.new("Animation")
+        animation.AnimationId = f1
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack.Looped = false
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.1)
+        wait(0.35)
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.2)
+        animationTrack:AdjustSpeed(0)
+        wait(1.5)
+        animationTrack:AdjustSpeed(0.2)
+        wait(0.5)
+        animationTrack:AdjustSpeed(0)
+        wait(1)
+        animationTrack:AdjustSpeed(6)
+        wait(0.2)
+        animationTrack:AdjustSpeed(0)
+        wait(1.88)
+        animationTrack:Stop()
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = f2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack.Looped = false
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(6)
+        wait(0.2)
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.78)
+        animationTrack:AdjustSpeed(0)
+        wait(1)
+        animationTrack:Stop()
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = f3
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack.Looped = false
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(2)
+        wait(0.5)
+        animationTrack:AdjustSpeed(0.5)
+        wait(1)
+        animationTrack:AdjustSpeed(5)
+        wait(0.5)
+        animationTrack:AdjustSpeed(1)
+        rootPart.Anchored = false
+        --next
+        local player = game.Players.LocalPlayer
+local backpack = player:FindFirstChildOfClass("Backpack")
+if backpack then
+    for _, tool in pairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            tool:Destroy()
+        end
+    end
+end
+--next
+local tool = Instance.new("Tool")
+tool.Name = "Stoic Bomb"
+ 
+-- Create the handle (invisible part)
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1  -- Make it invisible
+handle.CanCollide = false  -- Ensure it doesn't collide with other parts
+handle.Parent = tool
+ 
+-- Create a Sound instance
+local soundId = "rbxassetid://your_sound_id_here"  -- Replace with your sound ID
+local sound = Instance.new("Sound")
+sound.SoundId = soundId
+sound.Parent = tool
+ 
+-- Create the animation
+local animationId = "rbxassetid://16524237104"  -- Replace with your animation ID
+ 
+-- Function to equip the tool and trigger animation and sound
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+ 
+        -- Anchor the humanoid root part
+        rootPart.Anchored = false
+ 
+        -- Load and play animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+wait(0.5)
+-- Script to bring the player 100 studs into the sky and then smoothly bring them down to -100 studs
+ 
+-- Get the player and their character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+ 
+-- Function to smoothly move the player down
+local function smoothMoveTo(startPosition, endPosition, duration)
+    local startTime = tick()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+ 
+    while tick() - startTime < duration do
+        local elapsedTime = tick() - startTime
+        local alpha = elapsedTime / duration
+        humanoidRootPart.CFrame = CFrame.new(startPosition:Lerp(endPosition, alpha))
+        wait()
+    end
+ 
+    humanoidRootPart.CFrame = CFrame.new(endPosition)
+end
+ 
+-- Teleport the player 100 studs into the sky
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local startPosition = humanoidRootPart.Position
+local skyPosition = startPosition + Vector3.new(0, 100, 0)
+humanoidRootPart.CFrame = CFrame.new(skyPosition)
+ 
+-- Smoothly bring the player down to -100 studs
+local groundPosition = startPosition - Vector3.new(0, 0, 0)
+smoothMoveTo(skyPosition, groundPosition, 1) -- Duration of 5 seconds to smoothly move down
+-- Teleport the player 100 studs into the sky
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local startPosition = humanoidRootPart.Position
+local skyPosition = startPosition + Vector3.new(0, 4, 0)
+humanoidRootPart.CFrame = CFrame.new(skyPosition)
+-- Smoothly bring the player down to -100 studs
+local groundPosition = startPosition - Vector3.new(0, 0, 0)
+rootPart.Anchored = true
+wait(1.7)
+rootPart.Anchored = false
+smoothMoveTo(skyPosition, groundPosition, 0.2) -- Duration of 5 seconds to smoothly move down
+wait(0.5)
+            animationTrack:Stop()
+            wait(0.5)
+ 
+local platform = script.Parent
+local humanoid
+ 
+while true do
+    local closestPlayer = nil
+    local closestDistance = math.huge
+ 
+    for _, player in pairs(game.Players:GetPlayers()) do
+        local character = player.Character
+        if character and character:FindFirstChildWhichIsA("Humanoid") then
+            local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+            local distance = (character.HumanoidRootPart.Position - platform.Position).magnitude
+            if distance < closestDistance then
+                closestPlayer = player
+                closestDistance = distance
+            end
+        end
+    end
+ 
+    if closestPlayer then
+        local humanoid = closestPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+        if humanoid then
+            local position = humanoid.HumanoidRootPart.Position
+            platform.CFrame = position
+            wait(2.5)
+        end
+    end
+ 
+    wait(1)
+end
+ 
+        -- Stop animation, sound, and unanchor humanoid root part when unequipped
+        tool.Unequipped:Connect(function()
+            animationTrack:Stop()
+            sound:Stop()
+            rootPart.Anchored = false
+        end)
+    end
+end
+ 
+-- Connect the function to the Equipped event of the tool
+tool.Equipped:Connect(onEquipped)
+ 
+-- Give the tool to the player
+tool.Parent = game.Players.LocalPlayer.Backpack  -- Place in player's b
+--next
+local tool = Instance.new("Tool")
+tool.Name = "20-20-20 Dropkick"
+
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1
+handle.CanCollide = false
+handle.Parent = tool
+
+local soundId = "rbxassetid://17356346310"
+local sound = Instance.new("Sound")
+sound.SoundId = soundId
+sound.Parent = tool
+
+local soundId2 = "rbxassetid://17429233290"
+local sound2 = Instance.new("Sound")
+sound2.SoundId = soundId2
+sound2.Parent = tool
+
+local animationId = "rbxassetid://11365563255"
+local animationId2 = "rbxassetid://17838006839"
+local animationId3 = "rbxassetid://13365849295"
+local tp = "rbxassetid://18461128573"
+local hit = "rbxassetid://12832505612"
+
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        sound:Play()
+        sound2:Play()
+
+        rootPart.Anchored = true
+
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(5)
+        wait(1)
+        animationTrack:AdjustSpeed(0)
+        wait(0.7)
+        animationTrack:Stop()
+        rootPart.Anchored = false
+        --next
+        animationTrack:Stop()
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        -- run
+        animationTrack:Stop()
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        --nextttttt
+        -- Script placed in a LocalScript
+
+local imageId = "13631054028"  -- Original image ID
+local duration = 4  -- Duration for which the image will be visible (in seconds)
+
+-- Create a ScreenGui
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RotatingImageGui"
+screenGui.Parent = player.PlayerGui
+
+-- Create the first Frame for the normal image
+local frame1 = Instance.new("Frame")
+frame1.Name = "ImageFrame1"
+frame1.Size = UDim2.new(1, 0, 1, 0)  -- Size to cover the entire screen
+frame1.Position = UDim2.new(0, 0, 0, 0)  -- Positioned at the top-left corner of the screen
+frame1.BackgroundTransparency = 1  -- Make the background of the frame transparent
+frame1.Parent = screenGui
+
+local imageLabel1 = Instance.new("ImageLabel")
+imageLabel1.Name = "RotatingImage1"
+imageLabel1.Image = "rbxassetid://" .. imageId
+imageLabel1.Size = UDim2.new(1, 0, 1, 0)  -- Size to cover the entire frame
+imageLabel1.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Centered position
+imageLabel1.AnchorPoint = Vector2.new(0.5, 0.5)  -- Anchor in the middle
+imageLabel1.BackgroundTransparency = 1  -- Make the background of the image transparent
+imageLabel1.Parent = frame1
+
+-- Create Tween for rotation in the normal direction
+local tweenService = game:GetService("TweenService")
+local tweenInfo1 = TweenInfo.new(
+    duration,
+    Enum.EasingStyle.Linear,
+    Enum.EasingDirection.InOut,
+    -1,
+    true,
+    0
+)
+
+local goal1 = {
+    Rotation = 5000
+}
+
+local tween1 = tweenService:Create(imageLabel1, tweenInfo1, goal1)
+tween1:Play()
+
+-- Create the second Frame for the bright image
+local frame2 = Instance.new("Frame")
+frame2.Name = "ImageFrame2"
+frame2.Size = UDim2.new(1, 0, 1, 0)  -- Size to cover the entire screen
+frame2.Position = UDim2.new(0, 0, 0, 0)  -- Positioned at the top-left corner of the screen
+frame2.BackgroundTransparency = 1  -- Make the background of the frame transparent
+frame2.Parent = screenGui
+
+local imageLabel2 = Instance.new("ImageLabel")
+imageLabel2.Name = "RotatingImage2"
+imageLabel2.Image = "rbxassetid://" .. imageId
+imageLabel2.Size = UDim2.new(1, 0, 1, 0)  -- Size to cover the entire frame
+imageLabel2.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Centered position
+imageLabel2.AnchorPoint = Vector2.new(0.5, 0.5)  -- Anchor in the middle
+imageLabel2.BackgroundTransparency = 1  -- Make the background of the image transparent
+imageLabel2.Parent = frame2
+
+-- Set the image brightness to be very high
+local brightness = Instance.new("ImageLabel")
+brightness.Size = UDim2.new(1, 0, 1, 0)  -- Size to cover the entire frame
+brightness.BackgroundTransparency = 1
+brightness.Image = "rbxassetid://" .. imageId
+brightness.ImageColor3 = Color3.fromRGB(255, 255, 255)  -- Make it extremely bright
+brightness.Parent = imageLabel2
+
+-- Create Tween for rotation in the opposite direction
+local tweenInfo2 = TweenInfo.new(
+    duration,
+    Enum.EasingStyle.Linear,
+    Enum.EasingDirection.InOut,
+    -1,
+    true,
+    0
+)
+
+local goal2 = {
+    Rotation = -5000  -- Rotate in the opposite direction
+}
+
+local tween2 = tweenService:Create(imageLabel2, tweenInfo2, goal2)
+tween2:Play()
+
+-- Remove the images after 4 seconds
+delay(duration, function()
+    screenGui:Destroy()
+end)
+
+        --eeeeeeeeeee
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local moveSpeed = 220 -- studs per second (to move 382 studs in 2 seconds)
+local moveDuration = 4 -- duration of movement in seconds
+
+local isMoving = true
+
+-- Function to move the player forward
+local function moveForward()
+    local elapsedTime = 0
+    local runService = game:GetService("RunService")
+
+    -- Connect a function to RunService.Heartbeat for smooth movement
+    local heartbeatConnection
+    heartbeatConnection = runService.Heartbeat:Connect(function(deltaTime)
+        if not isMoving or elapsedTime >= moveDuration then
+            heartbeatConnection:Disconnect()
+            return
+        end
+        
+        -- Calculate movement direction and apply it
+        local currentCFrame = humanoidRootPart.CFrame
+        local moveDirection = currentCFrame.LookVector * moveSpeed * deltaTime
+        humanoidRootPart.CFrame = currentCFrame + moveDirection
+        
+        elapsedTime = elapsedTime + deltaTime
+    end)
+end
+
+-- Function to detect collisions with other humanoids
+local function onTouched(otherPart)
+    local otherCharacter = otherPart.Parent
+    local otherHumanoid = otherCharacter:FindFirstChildOfClass("Humanoid")
+
+    if otherHumanoid and otherCharacter ~= character then
+        isMoving = false
+        -- Get the player
+local player = game.Players.LocalPlayer
+ 
+-- Get the player's PlayerGui
+local playerGui = player:WaitForChild("PlayerGui")
+ 
+-- Create a new ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ImageLabelGui"
+screenGui.Parent = playerGui
+ 
+-- Create the ImageLabel
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Size = UDim2.new(1, 0, 1, 0)
+imageLabel.Position = UDim2.new(0, 0, 0, 0)
+imageLabel.SliceScale = 1
+imageLabel.ZIndex = 1
+imageLabel.TileSize = UDim2.new(1, 0, 1, 0)
+imageLabel.BackgroundTransparency = 1
+imageLabel.Parent = screenGui
+ 
+-- List of image IDs to cycle through
+local imageIds = {
+    "rbxassetid://17082594116",
+    "rbxassetid://17082593575",
+    "rbxassetid://17082592741",
+    "rbxassetid://17082591876"
+}
+ 
+-- Function to cycle through images
+local function cycleImages()
+    local index = 1
+    local numberOfImages = #imageIds
+    local delayTime = 1 -- Time between image changes
+ 
+    while index <= numberOfImages do
+        imageLabel.Image = imageIds[index]
+ 
+        -- Wait for the specified time before changing the image
+        if index < numberOfImages then
+            wait(delayTime)
+        else
+            wait(3.55) -- Wait for 5 seconds on the final image
+        end
+ 
+        index = index + 1
+    end
+ 
+    -- Optionally remove the GUI after cycling
+    screenGui:Destroy()
+end
+wait(7.55)
+animationTrack:Stop()
+animationTrack:AdjustSpeed(50)
+    end
+end
+
+-- Connect the touch event to stop the movement
+humanoidRootPart.Touched:Connect(onTouched)
+
+-- Start moving the player forward
+moveForward()
+
+
+wait(1)
+animationTrack:Stop()
+        --stop this shit
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.5)
+        animationTrack:Stop()
+        --stop this shit
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.5)
+        animationTrack:Stop()
+        --stop this shit
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.5)
+        animationTrack:Stop()
+        --stop this shit
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId2
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.5)
+        wait(0.5)
+        --stop
+        animationTrack:Stop()
+        --j
+        local animation = Instance.new("Animation")
+        animation.AnimationId = tp
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = tp
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        wait(0.25)
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = tp
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        wait(0.25)
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = tp
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        --next
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId3
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.7)
+        
+
+
+        tool.Unequipped:Connect(function()
+        print("eeeeeeeee")
+        end)
+    end
+end
+
+tool.Equipped:Connect(onEquipped)
+
+tool.Parent = game.Players.LocalPlayer.Backpack
+--fnal
+local tool = Instance.new("Tool")
+tool.Name = "Five Seasons"
+
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Transparency = 1
+handle.CanCollide = false
+handle.Parent = tool
+
+local soundId = "rbxassetid://your_sound_id_here"
+local sound = Instance.new("Sound")
+sound.SoundId = soundId
+sound.Parent = tool
+
+local dissaper = "rbxassetid://18461128573"
+local handpose = "rbxassetid://12983333733"
+local blast = "rbxassetid://16945557433"
+local ready = "rbxassetid://11365563255"
+local five = "rbxassetid://10466974800"
+
+local function onEquipped()
+    local character = game.Players.LocalPlayer.Character
+    if character then
+        local humanoid = character:WaitForChild("Humanoid")
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        rootPart.Anchored = false
+
+        local animation = Instance.new("Animation")
+        animation.AnimationId = ready
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(17)
+        wait(0.2)
+        animationTrack:AdjustSpeed(1)
+        wait(0.77)
+        animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = blast
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0)
+        --next
+        -- Set gravity to 0 for the local player
+game.Workspace.Gravity = 0
+
+        --next
+        local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Define the target position and movement duration
+local targetY = humanoidRootPart.Position.Y + 15
+local duration = 2 -- Duration of the movement in seconds
+local startTime = tick()
+
+-- Function to update the position
+local function updatePosition()
+    local elapsed = (tick() - startTime) / duration
+    if elapsed > 1 then
+        elapsed = 1
+    end
+    local newY = humanoidRootPart.Position.Y + (15 * elapsed)
+    humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position.X, newY, humanoidRootPart.Position.Z)
+end
+
+-- Run the position update loop
+while true do
+    updatePosition()
+    if tick() - startTime >= duration then
+        break
+    end
+    wait(0.1) -- Small delay to prevent excessive updates
+end
+--next
+animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = dissaper
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0)
+        wait(2)
+        rootPart.Anchored = true
+        animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = handpose
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(10)
+        wait(0.2)
+        animationTrack:AdjustSpeed(0)
+        animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = dissaper
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        wait(1)
+        rootPart.Anchored = true
+        -- Set gravity to 0 for the local player
+game.Workspace.Gravity = 196.2
+
+        --next
+        -- LocalScript
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui")
+local MenuFrame = Instance.new("Frame")
+local UIListLayout = Instance.new("UIListLayout")
+local TextButtonTemplate = Instance.new("TextButton")
+
+-- Create ScreenGui
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+ScreenGui.Name = "PlayerMenu"
+
+-- Create MenuFrame
+MenuFrame.Parent = ScreenGui
+MenuFrame.Size = UDim2.new(0.3, 0, 0.5, 0)
+MenuFrame.Position = UDim2.new(0.35, 0, 0.25, 0)
+MenuFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MenuFrame.BorderSizePixel = 0
+
+-- Create UIListLayout
+UIListLayout.Parent = MenuFrame
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 10)
+
+-- Function to update the menu with player names
+local function UpdateMenu()
+    -- Clear existing buttons
+    for _, child in pairs(MenuFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    -- Add buttons for each player
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= Player then
+            local button = TextButtonTemplate:Clone()
+            button.Parent = MenuFrame
+            button.Text = player.Name
+            button.Size = UDim2.new(1, -20, 0, 40)
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            button.BorderSizePixel = 0
+            button.MouseButton1Click:Connect(function()
+                -- Teleport the player and remove menu
+                Player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 155, 0)
+                --next
+                rootPart.Anchored = false
+                Player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 255, 0)
+                wait(0.5)
+                rootPart.Anchored = true
+                ScreenGui:Destroy()
+                --next
+                animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = dissaper
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(1)
+        wait(0.5)
+        animationTrack:Stop()
+        local animation = Instance.new("Animation")
+        animation.AnimationId = handpose
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(5)
+        wait(0.5)
+        animationTrack:AdjustSpeed(0)
+        -- Get the player
+local player = game.Players.LocalPlayer
+ 
+-- Get the player's PlayerGui
+local playerGui = player:WaitForChild("PlayerGui")
+ 
+-- Create a new ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ImageLabelGui"
+screenGui.Parent = playerGui
+ 
+-- List of image IDs to cycle through
+local imageIds = {
+    "rbxassetid://192776775",
+    "rbxassetid://192776775",
+    "rbxassetid://18461885601",
+    "rbxassetid://17356805968"
+}
+wait(2)
+ 
+-- Function to cycle through the images
+local function cycleImages()
+    for i, imageId in ipairs(imageIds) do
+        -- Create a new ImageLabel
+        local imageLabel = Instance.new("ImageLabel")
+        imageLabel.Size = UDim2.new(1, 0, 1, 0)
+        imageLabel.Position = UDim2.new(0, 0, 0, 0)
+        imageLabel.SliceScale = 1
+        imageLabel.ZIndex = 1
+        imageLabel.TileSize = UDim2.new(1, 0, 1, 0)
+        imageLabel.BackgroundTransparency = 1
+        imageLabel.Image = imageId
+        imageLabel.Parent = screenGui
+    end
+ 
+    -- Wait 5 seconds before removing the ScreenGui
+    task.wait(2)
+    screenGui:Destroy()
+end
+ 
+-- Start cycling images
+cycleImages()
+
+wait(1.58)
+animationTrack:Stop()
+local animation = Instance.new("Animation")
+        animation.AnimationId = five
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+        animationTrack:AdjustSpeed(0.7)
+        wait(0.5)
+        local player = game.Players.LocalPlayer
+ 
+-- Get the player's PlayerGui
+local playerGui = player:WaitForChild("PlayerGui")
+ 
+-- Create a new ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ImageLabelGui"
+screenGui.Parent = playerGui
+ 
+-- Create the ImageLabel
+local imageLabel = Instance.new("ImageLabel")
+imageLabel.Size = UDim2.new(1, 0, 1, 0)
+imageLabel.Position = UDim2.new(0, 0, 0, 0)
+imageLabel.SliceScale = 1
+imageLabel.ZIndex = 1
+imageLabel.TileSize = UDim2.new(1, 0, 1, 0)
+imageLabel.BackgroundTransparency = 1
+imageLabel.Parent = screenGui
+ 
+-- List of image IDs to cycle through
+local imageIds = {
+    "rbxassetid://17347708315",
+    "rbxassetid://17347708539",
+    "rbxassetid://17347707209",
+    "rbxassetid://17347707474",
+    "rbxassetid://17347706137",
+    "rbxassetid://17347706466",
+    "rbxassetid://17347704516",
+    "rbxassetid://17347704883",
+    "rbxassetid://17347702728",
+    "rbxassetid://17347702120",
+}
+ 
+-- Function to cycle through the images
+local function cycleImages()
+    for i, imageId in ipairs(imageIds) do
+        imageLabel.Image = imageId
+        task.wait(0.25)  -- Wait for 1 second between each image
+    end
+end
+ 
+-- Start cycling images
+cycleImages()
+wait(1)
+    screenGui:Destroy()
+    rootPart.Anchored = false
+    game.Workspace.Gravity = 500
+    wait(0.5)
+    game.Workspace.Gravity = 196.2
+
+
+            end)
+        end
+    end
+end
+
+
+-- Initialize button template
+TextButtonTemplate.Size = UDim2.new(1, -20, 0, 40)
+TextButtonTemplate.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButtonTemplate.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TextButtonTemplate.BorderSizePixel = 0
+TextButtonTemplate.TextSize = 18
+
+-- Update menu when the player joins
+UpdateMenu()
+
+-- Update menu when players are added or removed
+Players.PlayerAdded:Connect(UpdateMenu)
+Players.PlayerRemoving:Connect(UpdateMenu)
+--next
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+--next
+rootPart.Anchored = false
+Player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(-525.6773071289062, 766.9329223632812, -38.71534729003906)
+wait(1)
+rootPart.Anchored = true
+
+
+
+
+        sound:Play()
+
+        tool.Unequipped:Connect(function()
+            animationTrack:Stop()
+            sound:Stop()
+            rootPart.Anchored = false
+        end)
+    end
+end
+
+tool.Equipped:Connect(onEquipped)
+
+tool.Parent = game.Players.LocalPlayer.Backpack
+
+
+        tool.Unequipped:Connect(function()
+           print("lol")
+        end)
+    end
+end
+
+tool.Equipped:Connect(onEquipped)
+
+tool.Parent = game.Players.LocalPlayer.Backpack
+end)
